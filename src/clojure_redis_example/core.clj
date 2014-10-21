@@ -8,12 +8,16 @@
 
 (def server-connection {:pool {} :spec {:host "127.0.0.1" :port 6379}})
 (defmacro wcar* [& body] `(car/wcar server-connection ~@body))
-(wcar* (car/hmset* "yyy" {:yyy "yyy", :pass "yyyyyy"}))
 
-(wcar* (car/ping)
-  (car/zadd "tag:isvag-tag0" 10002 "{\"min\": 4, \"max\":104}")
+(comment
+  "examples of simple functions in Redis"
 
-  (car/get "foo"))
+  (wcar* (car/hmset* "yyy" {:yyy "yyy", :pass "yyyyyy"}))
+  (wcar* (car/ping)
+    (car/zadd "tag:isvag-tag0" 10002 "{\"min\": 4, \"max\":104}")
+
+    (car/get "foo"))
+  )
 
 (defn- DateTime->millis [^DateTime dateTime]
   (->
@@ -24,6 +28,9 @@
   (.minusSeconds startDate decrement))
 
 (def counter (atom 0))
+
+(def keyCounter (atom 0))
+
 
 (defn generate-random-value [value]
   (->
@@ -38,12 +45,33 @@
     [keyValue (json/write-str {:min value
                                :max (+ value 100)})]))
 
-(defn generate-dateTime-intervals [items decrement]
+(defn generate-dateTime-intervals [decrement]
   (->>
     (t/now)
     (iterate #(decrement-seconds-to-date % decrement))
-    (take items)
     (map DateTime->millis)
     (map generate-key-value-document)))
 
-(generate-dateTime-intervals 5 15)
+(defn add-entries-in-Redis [[firstEntry secondEntry]]
+  (do
+    (wcar* (car/zadd "benchmark" (swap! keyCounter inc) secondEntry))
+    (Thread/sleep 100)
+    (println @keyCounter)))
+
+(defn print-values [[firstEntry secondEntry]]
+  (pr (str "first value: " (str @counter) " second value: " secondEntry)))
+
+(defn run-benchmark [num-entries]
+  (->>
+    (generate-dateTime-intervals 15)
+    (map add-entries-in-Redis)
+    (take num-entries)
+    time))
+
+(defn -main [& [entries]]
+  ;  (run-benchmark 2))
+  (let [num-entries (Integer. (or entries (System/getenv "ENTRIES")))]
+    (run-benchmark num-entries)))
+
+
+
