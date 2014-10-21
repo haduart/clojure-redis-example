@@ -54,8 +54,7 @@
 
 (defn add-entries-in-Redis [[firstEntry secondEntry]]
   (do
-    (wcar* (car/zadd "benchmark" (swap! keyCounter inc) secondEntry))
-    (Thread/sleep 100)
+    (car/zadd "benchmark" (swap! keyCounter inc) secondEntry)
     (println @keyCounter)))
 
 (defn print-values [[firstEntry secondEntry]]
@@ -66,6 +65,8 @@
     (generate-dateTime-intervals 15)
     (map add-entries-in-Redis)
     (take num-entries)
+    doall
+    wcar*
     time))
 
 (defn -main [& [entries]]
