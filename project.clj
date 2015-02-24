@@ -2,7 +2,7 @@
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
+            :url  "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [com.taoensso/carmine "2.7.1"]
                  [clj-time "0.6.0"]
@@ -14,14 +14,7 @@
             [lein-ancient "0.5.5"]]
 
   :repl-options {:welcome (println "Welcome to the magical world of the repl!")
-                 :port 4001}
-  ;  [lein-cloverage "1.0.3-SNAPSHOT"]
-  :deploy-repositories [["releases" {:url "http://nexus.dsquare.intra/content/repositories/hps-releases"
-                                     :sign-releases false}]
-                        ["snapshots" {:url "http://nexus.dsquare.intra/content/repositories/hps-snapshots"
-                                      :sign-releases false}]]
-  :mirrors {"central" {:name "nexus"
-                       :url "http://nexus.dsquare.intra/content/groups/public"}}
+                 :port    4001}
 
   :min-lein-version "2.0.0"
 
